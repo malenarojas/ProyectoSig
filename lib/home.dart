@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_2/widgets/mapa.dart';
 
 import 'list_view1.dart';
 
@@ -56,7 +57,8 @@ class HomeScreen extends StatelessWidget {
                         // );
                         Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
-                                builder: (context) => const ListView1Screen()),
+                                //builder: (context) => const ListView1Screen()),
+                                builder: (context) => const MapSample()),
                             (Route<dynamic> route) => false);
                       },
                       child: Container(
