@@ -8,10 +8,10 @@ class DrawerScreen extends StatelessWidget {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
-        children: const <Widget>[
+        children: const [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: Color.fromARGB(255, 99, 206, 241),
             ),
             child: Text(
               'Drawer Header',
@@ -21,20 +21,38 @@ class DrawerScreen extends StatelessWidget {
               ),
             ),
           ),
-          ListTile(
-            leading: Icon(Icons.message),
-            title: Text('Messages'),
+          _ListTile(
+            titulo: 'Message',
+            icono: Icons.message,
           ),
-          ListTile(
-            leading: Icon(Icons.account_circle),
-            title: Text('Profile'),
+          _ListTile(
+            titulo: 'Profile',
+            icono: Icons.account_circle,
           ),
-          ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('Settings'),
+          _ListTile(
+            titulo: 'Settings',
+            icono: Icons.settings,
           ),
         ],
       ),
+    );
+  }
+}
+
+class _ListTile extends StatelessWidget {
+  final String titulo;
+  final icono;
+  const _ListTile({
+    Key? key,
+    required this.titulo,
+    required this.icono,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(icono),
+      title: Text(titulo),
     );
   }
 }
