@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_2/Drawer.dart';
+import 'dart:ui' as ui;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:core';
 
@@ -14,37 +15,46 @@ class MapSample extends StatefulWidget {
   State<MapSample> createState() => MapSampleState();
 }
 
+List<LatLng> latLen = [];
 final Set<Polyline> _polyline = {};
-Future<List> loadJson() async {
-  final response = await rootBundle.loadString("assets/bdsig.json");
 
-  var jsonResult = json.decode(response);
-  int lengthJson = response.length;
+
+Future<List> loadJson(String fid) async {
+  final response = await rootBundle.loadString("assets/bdsig.json");
   
-  for (var i = 0; i < lengthJson; i++) {
+//
+  var jsonResult = json.decode(response);
+/*   for (var i = 0; i < 4000; i++) {
     if(jsonResult[i]['code']=='L001I'){
-      List<LatLng> latLen = [
-         LatLng(double.parse(jsonResult[i]["Lont"]), double.parse(jsonResult[i]["Lati"]))
-      ];
-        _polyline.add(
+      latLen.add(LatLng(double.parse(jsonResult[i]["Lont"]), double.parse(jsonResult[i]["Lati"])));
+    }
+  }
+    _polyline.add(
           Polyline(
             polylineId: const PolylineId('1'),
             points:  latLen,
-            color: Colors.green,
-            width: 20,
+            color: Colors.black,
+            width: 200,
           )
-      );
-    }
-  }
+      ); */
+
+  
+    
   return jsonResult;
 }
 
 
 
+///INICIO
+
+/// FIN
+
+
+
 class MapSampleState extends State<MapSample> {
   final Completer<GoogleMapController> _controller = Completer();
-  final Set<Marker> _markers = {};
-  
+  Iterable markers = [];
+  Iterable polylines= [];
 
 
   static const CameraPosition _kGooglePlex = CameraPosition(
@@ -56,11 +66,35 @@ class MapSampleState extends State<MapSample> {
 
   @override
   void initState() {
+    
     super.initState();
+    getMarkers();
+    
 
-loadJson();
+  }
+  getMarkers() async {
+    try {
+      final response = await rootBundle.loadString("assets/bdsig.json");
+        List<LatLng> latLngPolylines = []; 
+        List results = json.decode(response);
 
+        Iterable _polyline = Iterable.generate(results.length, (index) {
+          Map result = results[index];
+          
+          latLngPolylines.add(LatLng(double.parse(result["Lati"]), double.parse(result["Lont"])));
+          return Polyline(
+            polylineId: const PolylineId('1'),
+            points:  latLngPolylines,
+            color: Colors.black,
+            width: 10,
+          );
+        });
 
+        setState(() {
+          polylines = _polyline;
+      
+        });
+    } catch (e) {}
   }
 
   static const CameraPosition _kLake = CameraPosition(
@@ -89,10 +123,13 @@ loadJson();
         ],
       ),
       body: GoogleMap(
-        polylines: _polyline,
+        polylines: Set.from(
+          polylines,
+        ),
         mapType: MapType.normal,
         initialCameraPosition: _kGooglePlex,
         onMapCreated: (GoogleMapController controller) {
+          setState(() {});
           _controller.complete(controller);
         },
       ),
