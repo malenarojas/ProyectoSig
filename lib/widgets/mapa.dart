@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_2/Drawer.dart';
-import 'dart:ui' as ui;
+import "package:http/http.dart" as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:core';
 
@@ -74,26 +74,34 @@ class MapSampleState extends State<MapSample> {
   }
   getMarkers() async {
     try {
-      final response = await rootBundle.loadString("assets/bdsig.json");
-        List<LatLng> latLngPolylines = []; 
-        List results = json.decode(response);
+        final response = await http.get(Uri.parse("http://sigbus.diagrammer.cfd/api/recorridos/1"));
 
+      final int statusCode = response.statusCode;
+
+      if (statusCode == 201 || statusCode == 200) {
+        List results = json.decode(response.body);
+        List<LatLng> latLngPolylines = []; 
+      
         Iterable _polyline = Iterable.generate(results.length, (index) {
           Map result = results[index];
+          String lati = result["Lati"];
+          String lont = result["Lont"];
+          lont = lont.replaceAll('-63,','-63.');
+          lati = lati.replaceAll('-17,', '-17.');
+          latLngPolylines.add(LatLng(double.parse(lati), double.parse(lont)));
           
-          latLngPolylines.add(LatLng(double.parse(result["Lati"]), double.parse(result["Lont"])));
-          return Polyline(
-            polylineId: const PolylineId('1'),
-            points:  latLngPolylines,
-            color: Colors.black,
-            width: 10,
-          );
-        });
+            return Polyline(
+              polylineId: const PolylineId('1'),
+              points:  latLngPolylines,
+              color: Colors.green,
+              width: 2,
+            );
+          });
 
         setState(() {
           polylines = _polyline;
-      
         });
+        }
     } catch (e) {}
   }
 
