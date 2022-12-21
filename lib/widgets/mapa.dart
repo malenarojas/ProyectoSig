@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_2/Drawer.dart';
@@ -10,7 +11,6 @@ import 'dart:core';
 class MapSample extends StatefulWidget {
   const MapSample({Key? key}) : super(key: key);
 
-
   @override
   State<MapSample> createState() => MapSampleState();
 }
@@ -18,10 +18,9 @@ class MapSample extends StatefulWidget {
 List<LatLng> latLen = [];
 final Set<Polyline> _polyline = {};
 
-
 Future<List> loadJson(String fid) async {
   final response = await rootBundle.loadString("assets/bdsig.json");
-  
+
 //
   var jsonResult = json.decode(response);
 /*   for (var i = 0; i < 4000; i++) {
@@ -38,70 +37,69 @@ Future<List> loadJson(String fid) async {
           )
       ); */
 
-  
-    
   return jsonResult;
 }
-
-
 
 ///INICIO
 
 /// FIN
 
-
-
 class MapSampleState extends State<MapSample> {
   final Completer<GoogleMapController> _controller = Completer();
   Iterable markers = [];
-  Iterable polylines= [];
-
+  Iterable polylines = [];
 
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(-17.7817958, -63.1716228),
     zoom: 12.4746,
   );
 
-    
-
   @override
   void initState() {
-    
     super.initState();
     getMarkers();
-    
-
   }
+
   getMarkers() async {
     try {
-        final response = await http.get(Uri.parse("http://sigbus.diagrammer.cfd/api/recorridos/1"));
+      final response = await http
+          .get(Uri.parse("http://sigbus.diagrammer.cfd/api/recorridos/1"));
 
       final int statusCode = response.statusCode;
 
       if (statusCode == 201 || statusCode == 200) {
         List results = json.decode(response.body);
-        List<LatLng> latLngPolylines = []; 
-      
+        List<LatLng> latLngPolylines = [];
+
         Iterable _polyline = Iterable.generate(results.length, (index) {
           Map result = results[index];
           String lati = result["Lati"];
           String lont = result["Lont"];
-          lont = lont.replaceAll('-63,','-63.');
+          lont = lont.replaceAll('-63,', '-63.');
           lati = lati.replaceAll('-17,', '-17.');
+
+          bool isInsideRadius2(
+              double currentX, double currentY, double lineX, double lineY) {
+            const double radius = 0.002355222456223941;
+            double d = sqrt(pow((lineX.abs() - currentX.abs()), 2) +
+                pow((lineY.abs() - currentY.abs()), 2));
+            return (d <= radius);
+          }
+
           latLngPolylines.add(LatLng(double.parse(lati), double.parse(lont)));
-          
-            return Polyline(
-              polylineId: const PolylineId('1'),
-              points:  latLngPolylines,
-              color: Colors.green,
-              width: 2,
-            );
-          });
+
+          return Polyline(
+            polylineId: const PolylineId('1'),
+            points: latLngPolylines,
+            color: Colors.green,
+            width: 2,
+          );
+        });
 
         setState(() {
           polylines = _polyline;
         });
-        }
+      }
     } catch (e) {}
   }
 
@@ -109,8 +107,7 @@ class MapSampleState extends State<MapSample> {
       bearing: 192.8334901395799,
       target: LatLng(-17.7817958, -63.1716228),
       tilt: 59.440717697143555,
-      zoom: 12.151926040649414
-  );
+      zoom: 12.151926040649414);
 
   @override
   Widget build(BuildContext context) {
@@ -142,11 +139,33 @@ class MapSampleState extends State<MapSample> {
         },
       ),
       drawer: const DrawerScreen(),
-      floatingActionButton: FloatingActionButton.extended(
+      persistentFooterButtons: [
+        FloatingActionButton.extended(
         onPressed: _goToTheLake,
         label: const Text('Buscar linea'),
         icon: const Icon(Icons.directions_bus_filled_outlined),
       ),
+        FloatingActionButton.extended(
+          label: const Text('+'),
+          icon: const Icon(Icons.account_box_outlined),
+          onPressed: () {
+            showDialog(context: context, builder: (_) => const AlertDialog(
+              title: Text("Hola"),
+            ));
+          },
+
+        ),
+        FloatingActionButton.extended(
+          label: const Text('+'),
+          icon: const Icon(Icons.account_tree_sharp),
+          onPressed: () {
+            showDialog(context: context, builder: (_) => const AlertDialog(
+              title: Text("Adios"),
+            ));
+          },
+          
+        ),
+      ],
     );
   }
 
