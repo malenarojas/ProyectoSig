@@ -4,8 +4,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_2/Drawer.dart';
+import 'package:flutter_application_2/list_view2.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:core';
+import 'package:http/http.dart' as http;
 
 class MapSample extends StatefulWidget {
   const MapSample({Key? key}) : super(key: key);
@@ -138,31 +140,54 @@ class MapSampleState extends State<MapSample> {
         },
       ),
       drawer: DrawerScreen(),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _goToTheLake,
-        label: const Text('Buscar linea'),
-        icon: const Icon(Icons.directions_bus_filled_outlined),
+      //floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton.extended(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const List_view2Screen()),
+              );
+            },
+            label: const Text('Buscar linea'),
+            icon: const Icon(Icons.directions_bus_filled_outlined),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          /* FloatingActionButton.extended(
+            label: const Text('+'),
+            icon: const Icon(Icons.account_box_outlined),
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (_) => const AlertDialog(
+                        title: Text("Hola"),
+                      ));
+            },
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          FloatingActionButton.extended(
+            label: const Text('+'),
+            icon: const Icon(Icons.account_tree_sharp),
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (_) => const AlertDialog(
+                        title: Text("Adios"),
+                      ));
+            },
+          ),
+          const SizedBox(
+            height: 100,
+          ),*/
+        ],
       ),
-      /*  FloatingActionButton.extended(
-          label: const Text('+'),
-          icon: const Icon(Icons.account_box_outlined),
-          onPressed: () {
-            showDialog(context: context, builder: (_) => const AlertDialog(
-              title: Text("Hola"),
-            ));
-          },
-
-        ),
-        FloatingActionButton.extended(
-          label: const Text('+'),
-          icon: const Icon(Icons.account_tree_sharp),
-          onPressed: () {
-            showDialog(context: context, builder: (_) => const AlertDialog(
-              title: Text("Adios"),
-            ));
-          },
-          
-        ),*/
     );
   }
 
