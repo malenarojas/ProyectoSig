@@ -14,7 +14,7 @@ class DrawerScreen extends StatelessWidget {
               color: Color.fromARGB(255, 99, 206, 241),
             ),
             child: Text(
-              'Drawer Header',
+              'Planificador de viajes',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 24,
@@ -22,7 +22,7 @@ class DrawerScreen extends StatelessWidget {
             ),
           ),
           _ListTile(
-            titulo: 'Message',
+            titulo: 'Ver rutas',
             icono: Icons.message,
           ),
           _ListTile(

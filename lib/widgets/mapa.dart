@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/Drawer.dart';
+import 'package:flutter_application_2/list_view2.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapSample extends StatefulWidget {
@@ -51,9 +52,13 @@ class MapSampleState extends State<MapSample> {
       ),
       drawer: DrawerScreen(),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _goToTheLake,
+        onPressed: () {
+           Navigator.push(context,MaterialPageRoute(builder: (context)=>List_view2Screen()), );
+        },
         label: const Text('Buscar linea'),
         icon: const Icon(Icons.directions_bus_filled_outlined),
+        
+        
       ),
     );
   }
