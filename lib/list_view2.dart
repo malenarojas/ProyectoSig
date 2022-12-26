@@ -7,6 +7,25 @@ class List_view2Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       children: <Widget>[
+        AppBar(
+          automaticallyImplyLeading: false,
+          leading: IconButton(icon: Icon(Icons.clear), onPressed: () {}),
+          title: Padding(
+            padding: const EdgeInsets.only(bottom: 10, right: 10),
+            child: TextField(
+              style: new TextStyle(color: Colors.white),
+              cursorColor: Colors.white,
+              autofocus: true,
+              decoration: InputDecoration(
+                focusColor: Colors.white,
+                focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white)),
+                enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white)),
+              ),
+            ),
+          ),
+        ),
         Card(
             clipBehavior: Clip.antiAlias,
             elevation: 16,
