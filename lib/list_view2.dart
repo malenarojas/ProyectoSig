@@ -1,7 +1,34 @@
+
 import 'package:flutter/material.dart';
+import 'package:flutter_application_2/widgets/mapa.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import "package:http/http.dart" as http;
+
+
+
+
 
 class List_view2Screen extends StatelessWidget {
-  const List_view2Screen({Key? key}) : super(key: key);
+   List_view2Screen({Key? key}) : super(key: key);  
+  List<LatLng> latLen = [];
+ 
+
+    Future recorrido(String lineaId, String lineaRe) async {
+    return http.get(
+      Uri.parse("http://sigbus.diagrammer.cfd/api/recorrido/$lineaId/$lineaRe"),
+    ).then(
+      (http.Response response) {  
+
+        final int statusCode = response.statusCode;
+        if (statusCode < 200 || statusCode > 400) {
+          throw Exception("Error while fetching data");
+        }
+      },
+      
+    );
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -9,11 +36,11 @@ class List_view2Screen extends StatelessWidget {
       children: <Widget>[
         AppBar(
           automaticallyImplyLeading: false,
-          leading: IconButton(icon: Icon(Icons.clear), onPressed: () {}),
-          title: Padding(
-            padding: const EdgeInsets.only(bottom: 10, right: 10),
+          leading: IconButton(icon: const Icon(Icons.clear), onPressed: () {}),
+          title: const Padding(
+            padding: EdgeInsets.only(bottom: 10, right: 10),
             child: TextField(
-              style: new TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.white),
               cursorColor: Colors.white,
               autofocus: true,
               decoration: InputDecoration(
@@ -41,7 +68,7 @@ class List_view2Screen extends StatelessWidget {
                       Ink.image(
                         width: 450.0,
                         height: 350.0,
-                        image: AssetImage('images/L001.png'),
+                        image: const AssetImage('images/L001.png'),
                         alignment: Alignment.center,
                         //fit: BoxFit.fitWidth,
                       )
@@ -51,18 +78,35 @@ class List_view2Screen extends StatelessWidget {
                   //  padding: EdgeInsets.all(16.0),
                   //  child: Text('linea 1'),
                   //),
-                  const ButtonBar(
+                   ButtonBar(
                     alignment: MainAxisAlignment.center,
                     buttonPadding:
-                        EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     children: [
                       ElevatedButton(
-                        child: Text('ida'),
-                        onPressed: null,
+                        child: const Text('ida'),
+                        onPressed: (){      
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MapSample(1,'I'),
+                        ),
+                      );
+                      },
                       ),
                       ElevatedButton(
-                        child: Text('vuelta'),
-                        onPressed: null,
+                        child: const Text('vuelta'),
+                        onPressed: (){
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MapSample(1,'V'),
+                        ),
+                      );
+
+                        },
                       ),
                     ],
                   ),
@@ -96,18 +140,34 @@ class List_view2Screen extends StatelessWidget {
                     padding: EdgeInsets.all(16.0),
                     child: Text('linea 2'),
                   ),
-                  const ButtonBar(
+                   ButtonBar(
                     alignment: MainAxisAlignment.center,
                     buttonPadding:
-                        EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     children: [
                       ElevatedButton(
-                        child: Text('ida'),
-                        onPressed: null,
+                        child: const Text('ida'),
+                        onPressed: (){                  
+                       Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MapSample(2,'I'),
+                        ),
+                      );
+                      },
                       ),
                       ElevatedButton(
-                        child: Text('vuelta'),
-                        onPressed: null,
+                        child: const Text('vuelta'),
+                        onPressed: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MapSample(2,'V'),
+                        ),
+                      );
+                        },
                       ),
                     ],
                   ),
@@ -129,27 +189,43 @@ class List_view2Screen extends StatelessWidget {
                       Ink.image(
                         width: 450.0,
                         height: 350.0,
-                        image: AssetImage('images/L005.png'),
+                        image: const AssetImage('images/L005.png'),
                         //fit: BoxFit.fitWidth,
                       )
                     ],
                   ),
                   const Padding(
                     padding: EdgeInsets.all(16.0),
-                    child: Text('linea 2'),
+                    child: Text('linea 5'),
                   ),
-                  const ButtonBar(
+                   ButtonBar(
                     alignment: MainAxisAlignment.center,
                     buttonPadding:
-                        EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     children: [
                       ElevatedButton(
-                        child: Text('ida'),
-                        onPressed: null,
+                        child: const Text('ida'),
+                        onPressed: (){
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MapSample(5,'I'),
+                        ),
+                      );
+                        },
                       ),
                       ElevatedButton(
-                        child: Text('vuelta'),
-                        onPressed: null,
+                        child: const Text('vuelta'),
+                        onPressed: (){
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MapSample(5,'V'),
+                        ),
+                      );
+                        },
                       ),
                     ],
                   ),
@@ -171,7 +247,7 @@ class List_view2Screen extends StatelessWidget {
                       Ink.image(
                         width: 450.0,
                         height: 350.0,
-                        image: AssetImage('images/L008.png'),
+                        image: const AssetImage('images/L008.png'),
                         //fit: BoxFit.fitWidth,
                         alignment: Alignment.center,
                       )
@@ -181,18 +257,34 @@ class List_view2Screen extends StatelessWidget {
                     padding: EdgeInsets.all(16.0),
                     child: Text('linea 8'),
                   ),
-                  const ButtonBar(
+                   ButtonBar(
                     alignment: MainAxisAlignment.center,
                     buttonPadding:
-                        EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     children: [
                       ElevatedButton(
-                        child: Text('ida'),
-                        onPressed: null,
+                        child: const Text('ida'),
+                        onPressed: (){
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MapSample(8,'I'),
+                        ),
+                      );
+                        },
                       ),
                       ElevatedButton(
-                        child: Text('vuelta'),
-                        onPressed: null,
+                        child: const Text('vuelta'),
+                        onPressed: (){
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MapSample(8,'V'),
+                        ),
+                      );
+                        },
                       ),
                     ],
                   ),
@@ -214,7 +306,7 @@ class List_view2Screen extends StatelessWidget {
                       Ink.image(
                         width: 450.0,
                         height: 350.0,
-                        image: AssetImage('images/L009.png'),
+                        image: const AssetImage('images/L009.png'),
                         //fit: BoxFit.fitWidth,
                         alignment: Alignment.center,
                       )
@@ -224,18 +316,34 @@ class List_view2Screen extends StatelessWidget {
                     padding: EdgeInsets.all(16.0),
                     child: Text('linea 9'),
                   ),
-                  const ButtonBar(
+                   ButtonBar(
                     alignment: MainAxisAlignment.center,
                     buttonPadding:
-                        EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     children: [
                       ElevatedButton(
-                        child: Text('ida'),
-                        onPressed: null,
+                        child: const Text('ida'),
+                        onPressed: (){
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MapSample(9,'I'),
+                        ),
+                      );
+                        },
                       ),
                       ElevatedButton(
-                        child: Text('vuelta'),
-                        onPressed: null,
+                        child: const Text('vuelta'),
+                        onPressed: (){
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MapSample(9,'V'),
+                        ),
+                      );
+                        },
                       ),
                     ],
                   ),
@@ -257,7 +365,7 @@ class List_view2Screen extends StatelessWidget {
                       Ink.image(
                         width: 450.0,
                         height: 350.0,
-                        image: AssetImage('images/L010.png'),
+                        image: const AssetImage('images/L010.png'),
                         //fit: BoxFit.fitWidth,
                         alignment: Alignment.center,
                       )
@@ -267,18 +375,34 @@ class List_view2Screen extends StatelessWidget {
                     padding: EdgeInsets.all(16.0),
                     child: Text('linea 10'),
                   ),
-                  const ButtonBar(
+                  ButtonBar(
                     alignment: MainAxisAlignment.center,
                     buttonPadding:
-                        EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     children: [
                       ElevatedButton(
-                        child: Text('ida'),
-                        onPressed: null,
+                        child: const Text('ida'),
+                        onPressed: (){
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MapSample(10,'I'),
+                        ),
+                      );
+                        },
                       ),
                       ElevatedButton(
-                        child: Text('vuelta'),
-                        onPressed: null,
+                        child: const Text('vuelta'),
+                        onPressed: (){
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MapSample(10,'V'),
+                        ),
+                      );
+                        },
                       ),
                     ],
                   ),
