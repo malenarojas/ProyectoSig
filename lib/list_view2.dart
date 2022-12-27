@@ -9,10 +9,18 @@ class List_view2Screen extends StatelessWidget {
       children: <Widget>[
         AppBar(
           automaticallyImplyLeading: false,
-          leading: IconButton(icon: Icon(Icons.clear), onPressed: () {}),
+          leading: IconButton(
+              icon: Icon(Icons.clear),
+              onPressed: () {
+                //cancelSearch();
+              }),
           title: Padding(
             padding: const EdgeInsets.only(bottom: 10, right: 10),
             child: TextField(
+              /*controller: searchController,
+          onEditingComplete: () {
+            searching();
+          },*/
               style: new TextStyle(color: Colors.white),
               cursorColor: Colors.white,
               autofocus: true,
