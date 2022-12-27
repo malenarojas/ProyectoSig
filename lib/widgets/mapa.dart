@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,6 +13,7 @@ import 'package:http/http.dart' as http;
 class MapSample extends StatefulWidget {
   var index;
   var recorrido;
+
   MapSample(this.index, this.recorrido);
 
   @override
@@ -20,11 +22,6 @@ class MapSample extends StatefulWidget {
 
 List<LatLng> latLen = [];
 final Set<Polyline> _polyline = {};
-
-
-
-
-
 
 /* Future<List> loadJson(String fid) async {
   final response = await rootBundle.loadString("assets/bdsig.json");
@@ -65,98 +62,128 @@ class MapSampleState extends State<MapSample> {
   @override
   void initState() {
     super.initState();
-    
-
   }
-  
-Future<dynamic> getRecorrido(String lineaId, String lineaRe) async {
-  dynamic url = "http://sigbus.diagrammer.cfd/api/recorrido/$lineaId/$lineaRe";
-  var response = await http.get(Uri.parse(url));
-  if (response.statusCode == 200) {
-         final int statusCode = response.statusCode;
-      if (statusCode == 201 || statusCode == 200) {
-        List results = json.decode(response.body);
-        List<LatLng> latLngPolylines = [];
 
-        Iterable _polyline = Iterable.generate(results.length, (index) {
-          Map result = results[index];
-          String lati = result["Lati"];
-          String lont = result["Lont"];
-          lont = lont.replaceAll('-63,', '-63.');
-          lati = lati.replaceAll('-17,', '-17.');
+  Future<dynamic> getRecorrido(String lineaId, String lineaRe) async {
+    dynamic url =
+        "http://sigbus.diagrammer.cfd/api/recorrido/$lineaId/$lineaRe";
+    dynamic url2 = "http://sigbus.diagrammer.cfd/api/lineas/$lineaId";
 
-          if(result['PuntoD']!=0){
+    var response = await http.get(Uri.parse(url));
+    var response2 = await http.get(Uri.parse(url2));
+
+    if (double.parse(lineaId) != 0 && double.parse(lineaRe) == 0) {
+      if (response2.statusCode == 200) {
+        final int statusCode = response2.statusCode;
+        if (statusCode == 201 || statusCode == 200) {
+          List results = json.decode(response2.body);
+          print(results);
+          List<LatLng> latLngPolylines = [];
+
+          Iterable _polyline = Iterable.generate(results.length, (index) {
+            List result = results[index] as List;
+            String lati = result[index]["Lati"];
+            String lont = result[index]["Lont"];
+            lont = lont.replaceAll('-63,', '-63.');
+            lati = lati.replaceAll('-17,', '-17.');
+
             latLngPolylines.add(LatLng(double.parse(lati), double.parse(lont)));
 
-          if(lineaRe == 'V'){
             return Polyline(
-            polylineId: const PolylineId('1'),
-            points: latLngPolylines,
-            color: Colors.green,
-            width: 2,
-          );
-        }else{
-            return Polyline(
-            polylineId: const PolylineId('1'),
-            points: latLngPolylines,
-            color: Colors.black,
-            width: 2,
-          );  
+              polylineId: const PolylineId('1'),
+              points: latLngPolylines,
+              color: Colors.red,
+              width: 2,
+            );
+          });
+          setState(() {
+            polylines = _polyline;
+          });
         }
-        }
-        });
-        setState(() {
-          polylines = _polyline;
-        });
-        
       }
+    } else {
+      if (response.statusCode == 200) {
+        final int statusCode = response.statusCode;
+        if (statusCode == 201 || statusCode == 200) {
+          List results = json.decode(response.body);
+          List<LatLng> latLngPolylines = [];
+
+          Iterable _polyline = Iterable.generate(results.length, (index) {
+            Map result = results[index];
+            String lati = result["Lati"];
+            String lont = result["Lont"];
+            lont = lont.replaceAll('-63,', '-63.');
+            lati = lati.replaceAll('-17,', '-17.');
+
+            if (result['PuntoD'] != 0) {
+              latLngPolylines
+                  .add(LatLng(double.parse(lati), double.parse(lont)));
+
+              if (lineaRe == 'V') {
+                return Polyline(
+                  polylineId: const PolylineId('1'),
+                  points: latLngPolylines,
+                  color: Colors.green,
+                  width: 2,
+                );
+              } else {
+                return Polyline(
+                  polylineId: const PolylineId('2'),
+                  points: latLngPolylines,
+                  color: Colors.black,
+                  width: 2,
+                );
+              }
+            }
+          });
+          setState(() {
+            polylines = _polyline;
+          });
+        }
+      }
+    }
   }
-}
 
+  getMarkers() async {
+    final response = await http
+        .get(Uri.parse("http://sigbus.diagrammer.cfd/api/lineas/1"));
 
+    final int statusCode = response.statusCode;
 
-  getMarkers(String url) async {
-   
-      final response = await http
-          .get(Uri.parse("http://sigbus.diagrammer.cfd/api/recorridos/1"));
+    if (statusCode == 201 || statusCode == 200) {
+      List results = json.decode(response.body);
+      List<LatLng> latLngPolylines = [];
 
-      final int statusCode = response.statusCode;
+      Iterable _polyline = Iterable.generate(results.length, (index) {
+        Map result = results[index];
+        String lati = result["Lati"];
+        String lont = result["Lont"];
+        lont = lont.replaceAll('-63,', '-63.');
+        lati = lati.replaceAll('-17,', '-17.');
 
-      if (statusCode == 201 || statusCode == 200) {
-        List results = json.decode(response.body);
-        List<LatLng> latLngPolylines = [];
+        bool isInsideRadius2(
+            double currentX, double currentY, double lineX, double lineY) {
+          const double radius = 0.002355222456223941;
+          double d = sqrt(pow((lineX.abs() - currentX.abs()), 2) +
+              pow((lineY.abs() - currentY.abs()), 2));
+          return (d <= radius);
+        }
 
-        Iterable _polyline = Iterable.generate(results.length, (index) {
-          Map result = results[index];
-          String lati = result["Lati"];
-          String lont = result["Lont"];
-          lont = lont.replaceAll('-63,', '-63.');
-          lati = lati.replaceAll('-17,', '-17.');
+        latLngPolylines.add(LatLng(double.parse(lati), double.parse(lont)));
 
-          bool isInsideRadius2(
-              double currentX, double currentY, double lineX, double lineY) {
-            const double radius = 0.002355222456223941;
-            double d = sqrt(pow((lineX.abs() - currentX.abs()), 2) +
-                pow((lineY.abs() - currentY.abs()), 2));
-            return (d <= radius);
-          }
+        return Polyline(
+          polylineId: const PolylineId('1'),
+          points: latLngPolylines,
+          color: Colors.green,
+          width: 2,
+        );
+      });
 
-          latLngPolylines.add(LatLng(double.parse(lati), double.parse(lont)));
-
-          return Polyline(
-            polylineId: const PolylineId('1'),
-            points: latLngPolylines,
-            color: Colors.green,
-            width: 2,
-          );
-        });
-
-        setState(() {
-          polylines = _polyline;
-        });
-      }
-   
-  } 
+      setState(() {
+        polylines = _polyline;
+      });
+    }
+  }
 
   static const CameraPosition _kLake = CameraPosition(
       bearing: 192.8334901395799,
@@ -166,56 +193,63 @@ Future<dynamic> getRecorrido(String lineaId, String lineaRe) async {
 
   @override
   Widget build(BuildContext context) {
-  return FutureBuilder(
-      future: Future.wait([getRecorrido(widget.index.toString(), widget.recorrido.toString())]),
-      builder: (context, items) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Planificador de viajes'),
-        centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 99, 206, 241),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.notifications_active),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: GoogleMap(
-        polylines: Set.from(
-          polylines,
-        ),
-        mapType: MapType.normal,
-        initialCameraPosition: _kGooglePlex,
-        onMapCreated: (GoogleMapController controller) {
-          setState(() {});
-          _controller.complete(controller);
-        },
-      ),
-      drawer: DrawerScreen(),
-      //floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton.extended(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>  List_view2Screen()),
-              );
-            },
-            label: const Text('Buscar linea'),
-            icon: const Icon(Icons.directions_bus_filled_outlined),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          /* FloatingActionButton.extended(
+    return FutureBuilder(
+        future: Future.wait([
+          getRecorrido(
+            widget.index.toString(),
+            widget.recorrido.toString(),
+          )
+        ]),
+        builder: (context, items) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Planificador de viajes'),
+              centerTitle: true,
+              backgroundColor: const Color.fromARGB(255, 99, 206, 241),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: () {},
+                ),
+                IconButton(
+                  icon: const Icon(Icons.notifications_active),
+                  onPressed: () {},
+                ),
+              ],
+            ),
+            body: GoogleMap(
+              myLocationEnabled: true,
+              compassEnabled: true,
+              polylines: Set.from(
+                polylines,
+              ),
+              mapType: MapType.normal,
+              initialCameraPosition: _kGooglePlex,
+              onMapCreated: (GoogleMapController controller) {
+                setState(() {});
+                _controller.complete(controller);
+              },
+            ),
+            drawer: DrawerScreen(),
+            //floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+            floatingActionButton: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                FloatingActionButton.extended(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => List_view2Screen()),
+                    );
+                  },
+                  label: const Text('Buscar linea'),
+                  icon: const Icon(Icons.directions_bus_filled_outlined),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                /* FloatingActionButton.extended(
             label: const Text('+'),
             icon: const Icon(Icons.account_box_outlined),
             onPressed: () {
@@ -243,14 +277,11 @@ Future<dynamic> getRecorrido(String lineaId, String lineaRe) async {
           const SizedBox(
             height: 100,
           ),*/
-        ],
-      ),
-    );
-  
+              ],
+            ),
+          );
+        });
   }
-  );
-  }
-
 
   Future<void> _goToTheLake() async {
     final GoogleMapController controller = await _controller.future;
