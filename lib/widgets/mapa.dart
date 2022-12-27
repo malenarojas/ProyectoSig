@@ -10,7 +10,9 @@ import 'dart:core';
 import 'package:http/http.dart' as http;
 
 class MapSample extends StatefulWidget {
-  const MapSample({Key? key}) : super(key: key);
+  var index;
+  var recorrido;
+  MapSample(this.index, this.recorrido);
 
   @override
   State<MapSample> createState() => MapSampleState();
@@ -19,7 +21,12 @@ class MapSample extends StatefulWidget {
 List<LatLng> latLen = [];
 final Set<Polyline> _polyline = {};
 
-Future<List> loadJson(String fid) async {
+
+
+
+
+
+/* Future<List> loadJson(String fid) async {
   final response = await rootBundle.loadString("assets/bdsig.json");
 
 //
@@ -39,7 +46,7 @@ Future<List> loadJson(String fid) async {
       ); */
 
   return jsonResult;
-}
+} */
 
 ///INICIO
 
@@ -58,11 +65,58 @@ class MapSampleState extends State<MapSample> {
   @override
   void initState() {
     super.initState();
-    getMarkers();
-  }
+    
 
-  getMarkers() async {
-    try {
+  }
+  
+Future<dynamic> getRecorrido(String lineaId, String lineaRe) async {
+  dynamic url = "http://sigbus.diagrammer.cfd/api/recorrido/$lineaId/$lineaRe";
+  var response = await http.get(Uri.parse(url));
+  if (response.statusCode == 200) {
+         final int statusCode = response.statusCode;
+      if (statusCode == 201 || statusCode == 200) {
+        List results = json.decode(response.body);
+        List<LatLng> latLngPolylines = [];
+
+        Iterable _polyline = Iterable.generate(results.length, (index) {
+          Map result = results[index];
+          String lati = result["Lati"];
+          String lont = result["Lont"];
+          lont = lont.replaceAll('-63,', '-63.');
+          lati = lati.replaceAll('-17,', '-17.');
+
+          if(result['PuntoD']!=0){
+            latLngPolylines.add(LatLng(double.parse(lati), double.parse(lont)));
+
+          if(lineaRe == 'V'){
+            return Polyline(
+            polylineId: const PolylineId('1'),
+            points: latLngPolylines,
+            color: Colors.green,
+            width: 2,
+          );
+        }else{
+            return Polyline(
+            polylineId: const PolylineId('1'),
+            points: latLngPolylines,
+            color: Colors.black,
+            width: 2,
+          );  
+        }
+        }
+        });
+        setState(() {
+          polylines = _polyline;
+        });
+        
+      }
+  }
+}
+
+
+
+  getMarkers(String url) async {
+   
       final response = await http
           .get(Uri.parse("http://sigbus.diagrammer.cfd/api/recorridos/1"));
 
@@ -101,8 +155,8 @@ class MapSampleState extends State<MapSample> {
           polylines = _polyline;
         });
       }
-    } catch (e) {}
-  }
+   
+  } 
 
   static const CameraPosition _kLake = CameraPosition(
       bearing: 192.8334901395799,
@@ -112,6 +166,9 @@ class MapSampleState extends State<MapSample> {
 
   @override
   Widget build(BuildContext context) {
+  return FutureBuilder(
+      future: Future.wait([getRecorrido(widget.index.toString(), widget.recorrido.toString())]),
+      builder: (context, items) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Planificador de viajes'),
@@ -149,7 +206,7 @@ class MapSampleState extends State<MapSample> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const List_view2Screen()),
+                    builder: (context) =>  List_view2Screen()),
               );
             },
             label: const Text('Buscar linea'),
@@ -189,7 +246,11 @@ class MapSampleState extends State<MapSample> {
         ],
       ),
     );
+  
   }
+  );
+  }
+
 
   Future<void> _goToTheLake() async {
     final GoogleMapController controller = await _controller.future;
