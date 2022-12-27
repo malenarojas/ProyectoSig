@@ -7,21 +7,6 @@ class List_view2Screen extends StatelessWidget {
   List_view2Screen({Key? key}) : super(key: key);
   List<LatLng> latLen = [];
 
-  Future recorrido(String lineaId, String lineaRe) async {
-    return http
-        .get(
-      Uri.parse("http://sigbus.diagrammer.cfd/api/recorrido/$lineaId/$lineaRe"),
-    )
-        .then(
-      (http.Response response) {
-        final int statusCode = response.statusCode;
-        if (statusCode < 200 || statusCode > 400) {
-          throw Exception("Error while fetching data");
-        }
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -49,7 +34,14 @@ class List_view2Screen extends StatelessWidget {
             clipBehavior: Clip.antiAlias,
             elevation: 16,
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MapSample(1, 0),
+                  ),
+                );
+              },
               child: Column(
                 //mainAxisSize: MainAxisSize.min,
                 //crossAxisAlignment: CrossAxisAlignment.start,
@@ -380,179 +372,7 @@ class List_view2Screen extends StatelessWidget {
                             MaterialPageRoute(
                               builder: (context) => MapSample(10, 'V'),
                             ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            )),
-        Card(
-            clipBehavior: Clip.antiAlias,
-            elevation: 16,
-            child: InkWell(
-              onTap: () {},
-              child: Column(
-                //mainAxisSize: MainAxisSize.min,
-                //crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Stack(
-                    alignment: Alignment.bottomLeft,
-                    children: [
-                      Ink.image(
-                        width: 450.0,
-                        height: 350.0,
-                        image: const AssetImage('images/L016.png'),
-                        //fit: BoxFit.fitWidth,
-                        alignment: Alignment.center,
-                      )
-                    ],
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text('linea 16'),
-                  ),
-                  ButtonBar(
-                    alignment: MainAxisAlignment.center,
-                    buttonPadding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
-                    children: [
-                      ElevatedButton(
-                        child: const Text('ida'),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MapSample(16, 'I'),
-                            ),
-                          );
-                        },
-                      ),
-                      ElevatedButton(
-                        child: const Text('vuelta'),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MapSample(16, 'V'),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            )),
-        Card(
-            clipBehavior: Clip.antiAlias,
-            elevation: 16,
-            child: InkWell(
-              onTap: () {},
-              child: Column(
-                //mainAxisSize: MainAxisSize.min,
-                //crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Stack(
-                    alignment: Alignment.bottomLeft,
-                    children: [
-                      Ink.image(
-                        width: 450.0,
-                        height: 350.0,
-                        image: const AssetImage('images/L017.png'),
-                        //fit: BoxFit.fitWidth,
-                        alignment: Alignment.center,
-                      )
-                    ],
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text('linea 17'),
-                  ),
-                  ButtonBar(
-                    alignment: MainAxisAlignment.center,
-                    buttonPadding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
-                    children: [
-                      ElevatedButton(
-                        child: const Text('ida'),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MapSample(17, 'I'),
-                            ),
-                          );
-                        },
-                      ),
-                      ElevatedButton(
-                        child: const Text('vuelta'),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MapSample(17, 'V'),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            )),
-        Card(
-            clipBehavior: Clip.antiAlias,
-            elevation: 16,
-            child: InkWell(
-              onTap: () {},
-              child: Column(
-                //mainAxisSize: MainAxisSize.min,
-                //crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Stack(
-                    alignment: Alignment.bottomLeft,
-                    children: [
-                      Ink.image(
-                        width: 450.0,
-                        height: 350.0,
-                        image: const AssetImage('images/L018.png'),
-                        //fit: BoxFit.fitWidth,
-                        alignment: Alignment.center,
-                      )
-                    ],
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text('linea 18'),
-                  ),
-                  ButtonBar(
-                    alignment: MainAxisAlignment.center,
-                    buttonPadding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
-                    children: [
-                      ElevatedButton(
-                        child: const Text('ida'),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MapSample(18, 'I'),
-                            ),
-                          );
-                        },
-                      ),
-                      ElevatedButton(
-                        child: const Text('vuelta'),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MapSample(18, 'V'),
-                            ),
-                          );
-                        },
+                          );                        },
                       ),
                     ],
                   ),
