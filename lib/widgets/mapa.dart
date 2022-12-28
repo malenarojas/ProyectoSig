@@ -198,11 +198,11 @@ class MapSampleState extends State<MapSample> {
                 /* SizedBox(
                   height: 20,
                 ),*/
-                Buttoon_mas(),
+                //Buttoon_mas(),
                 /* SizedBox(
                   height: 20,
                 ),*/
-                Button_menos(),
+                //Button_menos(),
                 /* SizedBox(
                   height: 100,
                 ),*/
