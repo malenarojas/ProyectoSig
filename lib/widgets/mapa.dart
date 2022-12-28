@@ -21,11 +21,6 @@ class MapSample extends StatefulWidget {
 List<LatLng> latLen = [];
 final Set<Polyline> _polyline = {};
 
-
-
-
-
-
 /* Future<List> loadJson(String fid) async {
   final response = await rootBundle.loadString("assets/bdsig.json");
 
@@ -65,15 +60,14 @@ class MapSampleState extends State<MapSample> {
   @override
   void initState() {
     super.initState();
-    
-
   }
-  
-Future<dynamic> getRecorrido(String lineaId, String lineaRe) async {
-  dynamic url = "http://sigbus.diagrammer.cfd/api/recorrido/$lineaId/$lineaRe";
-  var response = await http.get(Uri.parse(url));
-  if (response.statusCode == 200) {
-         final int statusCode = response.statusCode;
+
+  Future<dynamic> getRecorrido(String lineaId, String lineaRe) async {
+    dynamic url =
+        "http://sigbus.diagrammer.cfd/api/recorrido/$lineaId/$lineaRe";
+    var response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      final int statusCode = response.statusCode;
       if (statusCode == 201 || statusCode == 200) {
         List results = json.decode(response.body);
         List<LatLng> latLngPolylines = [];
@@ -85,78 +79,73 @@ Future<dynamic> getRecorrido(String lineaId, String lineaRe) async {
           lont = lont.replaceAll('-63,', '-63.');
           lati = lati.replaceAll('-17,', '-17.');
 
-          if(result['PuntoD']!=0){
+          if (result['PuntoD'] != 0) {
             latLngPolylines.add(LatLng(double.parse(lati), double.parse(lont)));
 
-          if(lineaRe == 'V'){
-            return Polyline(
-            polylineId: const PolylineId('1'),
-            points: latLngPolylines,
-            color: Colors.green,
-            width: 2,
-          );
-        }else{
-            return Polyline(
-            polylineId: const PolylineId('1'),
-            points: latLngPolylines,
-            color: Colors.black,
-            width: 2,
-          );  
-        }
-        }
+            if (lineaRe == 'V') {
+              return Polyline(
+                polylineId: const PolylineId('1'),
+                points: latLngPolylines,
+                color: Colors.green,
+                width: 2,
+              );
+            } else {
+              return Polyline(
+                polylineId: const PolylineId('1'),
+                points: latLngPolylines,
+                color: Colors.black,
+                width: 2,
+              );
+            }
+          }
         });
         setState(() {
           polylines = _polyline;
         });
-        
       }
+    }
   }
-}
-
-
 
   getMarkers(String url) async {
-   
-      final response = await http
-          .get(Uri.parse("http://sigbus.diagrammer.cfd/api/recorridos/1"));
+    final response = await http
+        .get(Uri.parse("http://sigbus.diagrammer.cfd/api/recorridos/1"));
 
-      final int statusCode = response.statusCode;
+    final int statusCode = response.statusCode;
 
-      if (statusCode == 201 || statusCode == 200) {
-        List results = json.decode(response.body);
-        List<LatLng> latLngPolylines = [];
+    if (statusCode == 201 || statusCode == 200) {
+      List results = json.decode(response.body);
+      List<LatLng> latLngPolylines = [];
 
-        Iterable _polyline = Iterable.generate(results.length, (index) {
-          Map result = results[index];
-          String lati = result["Lati"];
-          String lont = result["Lont"];
-          lont = lont.replaceAll('-63,', '-63.');
-          lati = lati.replaceAll('-17,', '-17.');
+      Iterable _polyline = Iterable.generate(results.length, (index) {
+        Map result = results[index];
+        String lati = result["Lati"];
+        String lont = result["Lont"];
+        lont = lont.replaceAll('-63,', '-63.');
+        lati = lati.replaceAll('-17,', '-17.');
 
-          bool isInsideRadius2(
-              double currentX, double currentY, double lineX, double lineY) {
-            const double radius = 0.002355222456223941;
-            double d = sqrt(pow((lineX.abs() - currentX.abs()), 2) +
-                pow((lineY.abs() - currentY.abs()), 2));
-            return (d <= radius);
-          }
+        bool isInsideRadius2(
+            double currentX, double currentY, double lineX, double lineY) {
+          const double radius = 0.002355222456223941;
+          double d = sqrt(pow((lineX.abs() - currentX.abs()), 2) +
+              pow((lineY.abs() - currentY.abs()), 2));
+          return (d <= radius);
+        }
 
-          latLngPolylines.add(LatLng(double.parse(lati), double.parse(lont)));
+        latLngPolylines.add(LatLng(double.parse(lati), double.parse(lont)));
 
-          return Polyline(
-            polylineId: const PolylineId('1'),
-            points: latLngPolylines,
-            color: Colors.green,
-            width: 2,
-          );
-        });
+        return Polyline(
+          polylineId: const PolylineId('1'),
+          points: latLngPolylines,
+          color: Colors.green,
+          width: 2,
+        );
+      });
 
-        setState(() {
-          polylines = _polyline;
-        });
-      }
-   
-  } 
+      setState(() {
+        polylines = _polyline;
+      });
+    }
+  }
 
   static const CameraPosition _kLake = CameraPosition(
       bearing: 192.8334901395799,
@@ -166,95 +155,128 @@ Future<dynamic> getRecorrido(String lineaId, String lineaRe) async {
 
   @override
   Widget build(BuildContext context) {
-  return FutureBuilder(
-      future: Future.wait([getRecorrido(widget.index.toString(), widget.recorrido.toString())]),
-      builder: (context, items) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Planificador de viajes'),
-        centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 99, 206, 241),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.notifications_active),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: GoogleMap(
-        polylines: Set.from(
-          polylines,
-        ),
-        mapType: MapType.normal,
-        initialCameraPosition: _kGooglePlex,
-        onMapCreated: (GoogleMapController controller) {
-          setState(() {});
-          _controller.complete(controller);
-        },
-      ),
-      drawer: DrawerScreen(),
-      //floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton.extended(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>  List_view2Screen()),
-              );
-            },
-            label: const Text('Buscar linea'),
-            icon: const Icon(Icons.directions_bus_filled_outlined),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          /* FloatingActionButton.extended(
-            label: const Text('+'),
-            icon: const Icon(Icons.account_box_outlined),
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (_) => const AlertDialog(
-                        title: Text("Hola"),
-                      ));
-            },
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          FloatingActionButton.extended(
-            label: const Text('+'),
-            icon: const Icon(Icons.account_tree_sharp),
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (_) => const AlertDialog(
-                        title: Text("Adios"),
-                      ));
-            },
-          ),
-          const SizedBox(
-            height: 100,
-          ),*/
-        ],
-      ),
-    );
-  
+    return FutureBuilder(
+        future: Future.wait([
+          getRecorrido(widget.index.toString(), widget.recorrido.toString())
+        ]),
+        builder: (context, items) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Planificador de viajes'),
+              centerTitle: true,
+              backgroundColor: const Color.fromARGB(255, 99, 206, 241),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: () {},
+                ),
+                IconButton(
+                  icon: const Icon(Icons.notifications_active),
+                  onPressed: () {},
+                ),
+              ],
+            ),
+            body: GoogleMap(
+              myLocationEnabled: true,
+              compassEnabled: true,
+              polylines: Set.from(
+                polylines,
+              ),
+              mapType: MapType.normal,
+              initialCameraPosition: _kGooglePlex,
+              onMapCreated: (GoogleMapController controller) {
+                setState(() {});
+                _controller.complete(controller);
+              },
+            ),
+            drawer: DrawerScreen(),
+            //floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+            floatingActionButton: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: const [
+                button_buscar(),
+                SizedBox(
+                  height: 20,
+                ),
+                /* Buttoon_mas(),
+                SizedBox(
+                  height: 20,
+                ),
+                Button_menos(),
+                SizedBox(
+                  height: 100,
+                ),*/
+              ],
+            ),
+          );
+        });
   }
-  );
-  }
-
 
   Future<void> _goToTheLake() async {
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
+  }
+}
+
+class Button_menos extends StatelessWidget {
+  const Button_menos({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton.extended(
+      label: const Text('+'),
+      icon: const Icon(Icons.account_tree_sharp),
+      onPressed: () {
+        showDialog(
+            context: context,
+            builder: (_) => const AlertDialog(
+                  title: Text("Adios"),
+                ));
+      },
+    );
+  }
+}
+
+class Buttoon_mas extends StatelessWidget {
+  const Buttoon_mas({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton.extended(
+      label: const Text('+'),
+      icon: const Icon(Icons.account_box_outlined),
+      onPressed: () {
+        showDialog(
+            context: context,
+            builder: (_) => const AlertDialog(
+                  title: Text("Hola"),
+                ));
+      },
+    );
+  }
+}
+
+class button_buscar extends StatelessWidget {
+  const button_buscar({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton.extended(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => List_view2Screen()),
+        );
+      },
+      label: const Text('Buscar linea'),
+      icon: const Icon(Icons.directions_bus_filled_outlined),
+    );
   }
 }
 
