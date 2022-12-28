@@ -190,20 +190,20 @@ class MapSampleState extends State<MapSample> {
               },
             ),
             drawer: DrawerScreen(),
-            //floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
             floatingActionButton: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: const [
                 button_buscar(),
-                SizedBox(
+                /* SizedBox(
                   height: 20,
-                ),
-                /* Buttoon_mas(),
-                SizedBox(
+                ),*/
+                Buttoon_mas(),
+                /* SizedBox(
                   height: 20,
-                ),
+                ),*/
                 Button_menos(),
-                SizedBox(
+                /* SizedBox(
                   height: 100,
                 ),*/
               ],
@@ -215,68 +215,6 @@ class MapSampleState extends State<MapSample> {
   Future<void> _goToTheLake() async {
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
-  }
-}
-
-class Button_menos extends StatelessWidget {
-  const Button_menos({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return FloatingActionButton.extended(
-      label: const Text('+'),
-      icon: const Icon(Icons.account_tree_sharp),
-      onPressed: () {
-        showDialog(
-            context: context,
-            builder: (_) => const AlertDialog(
-                  title: Text("Adios"),
-                ));
-      },
-    );
-  }
-}
-
-class Buttoon_mas extends StatelessWidget {
-  const Buttoon_mas({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return FloatingActionButton.extended(
-      label: const Text('+'),
-      icon: const Icon(Icons.account_box_outlined),
-      onPressed: () {
-        showDialog(
-            context: context,
-            builder: (_) => const AlertDialog(
-                  title: Text("Hola"),
-                ));
-      },
-    );
-  }
-}
-
-class button_buscar extends StatelessWidget {
-  const button_buscar({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return FloatingActionButton.extended(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => List_view2Screen()),
-        );
-      },
-      label: const Text('Buscar linea'),
-      icon: const Icon(Icons.directions_bus_filled_outlined),
-    );
   }
 }
 
@@ -294,6 +232,76 @@ class _ListTile extends StatelessWidget {
     return ListTile(
       leading: Icon(icono),
       title: Text(titulo),
+    );
+  }
+}
+
+class Button_menos extends StatelessWidget {
+  const Button_menos({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: FloatingActionButton.extended(
+        label: const Text('+'),
+        icon: Icon(Icons.account_tree_sharp),
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (_) => const AlertDialog(
+                    title: Text("Adios"),
+                  ));
+        },
+      ),
+    );
+  }
+}
+
+class Buttoon_mas extends StatelessWidget {
+  const Buttoon_mas({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: FloatingActionButton.extended(
+        heroTag: 'heroe',
+        label: const Text('+'),
+        icon: const Icon(Icons.account_box_outlined),
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (_) => const AlertDialog(
+                    title: Text("Hola"),
+                  ));
+        },
+      ),
+    );
+  }
+}
+
+class button_buscar extends StatelessWidget {
+  const button_buscar({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: FloatingActionButton.extended(
+        heroTag: 'heroe',
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => List_view2Screen()),
+          );
+        },
+        label: const Text('Buscar linea'),
+        icon: const Icon(Icons.directions_bus_filled_outlined),
+      ),
     );
   }
 }
