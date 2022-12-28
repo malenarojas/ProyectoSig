@@ -37,7 +37,7 @@ class ListView1Screen extends StatelessWidget {
           elevation: 100,
           titleSpacing: 20,
         ),
-        drawer: const _Drawer(),
+        //drawer: const _Drawer(),
         body: const TabBarView(
           children: [
             Center(

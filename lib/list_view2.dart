@@ -372,8 +372,7 @@ class List_view2Screen extends StatelessWidget {
                             MaterialPageRoute(
                               builder: (context) => MapSample(10, 'V'),
                             ),
-                          );
-                        },
+                          );                        },
                       ),
                     ],
                   ),
