@@ -38,7 +38,7 @@ class List_view2Screen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MapSample(1, 0),
+                    builder: (context) => MapSample(1, 0, 0),
                   ),
                 );
               },
@@ -73,7 +73,7 @@ class List_view2Screen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => MapSample(1, 'I'),
+                              builder: (context) => MapSample(1, 'I', 0xfff00b0b),
                             ),
                           );
                         },
@@ -84,7 +84,7 @@ class List_view2Screen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => MapSample(1, 'V'),
+                              builder: (context) => MapSample(1, 'V', 0xfff00b0b),
                             ),
                           );
                         },
@@ -132,7 +132,7 @@ class List_view2Screen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => MapSample(2, 'I'),
+                              builder: (context) => MapSample(2, 'I', 0xff800000),
                             ),
                           );
                         },
@@ -143,7 +143,7 @@ class List_view2Screen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => MapSample(2, 'V'),
+                              builder: (context) => MapSample(2, 'V',0xff800000),
                             ),
                           );
                         },
@@ -188,7 +188,7 @@ class List_view2Screen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => MapSample(5, 'I'),
+                              builder: (context) => MapSample(5, 'I',0xff0010ef),
                             ),
                           );
                         },
@@ -199,7 +199,7 @@ class List_view2Screen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => MapSample(5, 'V'),
+                              builder: (context) => MapSample(5, 'V',0xff0010ef),
                             ),
                           );
                         },
@@ -245,7 +245,7 @@ class List_view2Screen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => MapSample(8, 'I'),
+                              builder: (context) => MapSample(8, 'I',0xff150677 ),
                             ),
                           );
                         },
@@ -256,7 +256,7 @@ class List_view2Screen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => MapSample(8, 'V'),
+                              builder: (context) => MapSample(8, 'V',0xff150677 ),
                             ),
                           );
                         },
@@ -302,7 +302,7 @@ class List_view2Screen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => MapSample(9, 'I'),
+                              builder: (context) => MapSample(9, 'I',0xff038c00 ),
                             ),
                           );
                         },
@@ -313,7 +313,7 @@ class List_view2Screen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => MapSample(9, 'V'),
+                              builder: (context) => MapSample(9, 'V',0xff038c00 ),
                             ),
                           );
                         },
@@ -359,7 +359,7 @@ class List_view2Screen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => MapSample(10, 'I'),
+                              builder: (context) => MapSample(10, 'I',0xff00d9ff),
                             ),
                           );
                         },
@@ -370,7 +370,7 @@ class List_view2Screen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => MapSample(10, 'V'),
+                              builder: (context) => MapSample(10, 'V',0xff00d9ff),
                             ),
                           );                        },
                       ),

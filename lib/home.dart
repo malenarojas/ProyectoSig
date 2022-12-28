@@ -58,7 +58,7 @@ class HomeScreen extends StatelessWidget {
                         Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
                                 //builder: (context) => const ListView1Screen()),
-                                builder: (context) =>  MapSample(0,'V')),
+                                builder: (context) =>  MapSample(0,'V',0)),
                             (Route<dynamic> route) => false);
                       },
                       child: Container(

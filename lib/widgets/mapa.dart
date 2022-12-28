@@ -12,11 +12,12 @@ import 'package:http/http.dart' as http;
 class MapSample extends StatefulWidget {
   var index;
   var recorrido;
+  var lineaCol;
   var lontinicio;
   var latiinicio;
   var lontfin;
   var latifin;
-  MapSample(this.index, this.recorrido);
+  MapSample(this.index, this.recorrido, this.lineaCol);
 
   @override
   State<MapSample> createState() => MapSampleState();
@@ -102,11 +103,15 @@ class MapSampleState extends State<MapSample> {
     }
   }
 
-  Future<dynamic> getRecorrido(String lineaId, String lineaRe) async {
+  Future<dynamic> getRecorrido(String lineaId, String lineaRe, int lineaCol) async {
     dynamic url =
         "http://sistemageografico.tonker.net/mapsig/public/api/recorrido/$lineaId/$lineaRe";
     var response = await http.get(Uri.parse(url));
 
+    dynamic colorUrl = "http://sigbus.diagrammer.cfd/api/color/$lineaId/$lineaRe";
+    var responseColor = await http.get(Uri.parse(colorUrl)); 
+    
+    Color test = Color (lineaCol);
     if (response.statusCode == 200) {
       final int statusCode = response.statusCode;
       if (statusCode == 201 || statusCode == 200) {
@@ -127,14 +132,14 @@ class MapSampleState extends State<MapSample> {
               return Polyline(
                 polylineId: const PolylineId('1'),
                 points: latLngPolylines,
-                color: Colors.green,
+                color: test,
                 width: 2,
               );
             } else {
               return Polyline(
                 polylineId: const PolylineId('2'),
                 points: latLngPolylines,
-                color: Colors.black,
+                color: test,
                 width: 2,
               );
             }
@@ -230,6 +235,7 @@ class MapSampleState extends State<MapSample> {
           getRecorrido(
             widget.index.toString(),
             widget.recorrido.toString(),
+            widget.lineaCol,
           ),
           getPlan(
             widget.lontinicio.toString(),
@@ -345,7 +351,7 @@ class MapSampleState extends State<MapSample> {
     final Uint8List markerIcon =
         await getBytesFromAsset('images/flag.png', 150);
 
-/*     if (markerAll.isEmpty) {
+     if (markerAll.isEmpty) {
       showDialog(
         context: context,
         builder: (_) => const AlertDialog(
@@ -354,7 +360,7 @@ class MapSampleState extends State<MapSample> {
               "El primer(1er) Tap indicará tu punto de salida, y el segundo Tap (2do) el de llegada. Permitenos ayudarte a tener un buen viaje."),
         ),
       );
-    } */
+    } 
     setState(
       () {
 
