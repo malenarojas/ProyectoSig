@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_2/Drawer.dart';
 import 'package:flutter_application_2/list_view2.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:core';
 import 'package:http/http.dart' as http;
@@ -26,37 +27,25 @@ class MapSample extends StatefulWidget {
 List<LatLng> latLen = [];
 final Set<Polyline> _polyline = {};
 
-/* Future<List> loadJson(String fid) async {
-  final response = await rootBundle.loadString("assets/bdsig.json");
-
-//
-  var jsonResult = json.decode(response);
-/*   for (var i = 0; i < 4000; i++) {
-    if(jsonResult[i]['code']=='L001I'){
-      latLen.add(LatLng(double.parse(jsonResult[i]["Lont"]), double.parse(jsonResult[i]["Lati"])));
-    }
-  }
-    _polyline.add(
-          Polyline(
-            polylineId: const PolylineId('1'),
-            points:  latLen,
-            color: Colors.black,
-            width: 200,
-          )
-      ); */
-
-  return jsonResult;
-} */
-
-///INICIO
-
-/// FIN
-
 class MapSampleState extends State<MapSample> {
   final Completer<GoogleMapController> _controller = Completer();
   Iterable markers = [];
-  Iterable polylines = [];
+  List<dynamic> polylines = [];
   Iterable polylines2 = [];
+
+
+
+  PolylinePoints polylinePoints = PolylinePoints();
+  Map<PolylineId, Polyline> Polylines = {};
+  LatLng startLocation = const LatLng(-17.779524, -63.172542);  
+  LatLng endLocation = const LatLng(-17.778195, -63.165161); 
+  static const LatLng _center = LatLng(-17.778943, -63.168997);
+  List<LatLng> polylineCoordinates = [];
+  String googleAPiKey = "AIzaSyB4DX_UdO_V3a5rua6VdmFbuPXmyLHz6Oo";
+
+
+
+
 
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(-17.7817958, -63.1716228),
@@ -65,11 +54,53 @@ class MapSampleState extends State<MapSample> {
 
   @override
   void initState() {
+
+getDirections();
+
+
     super.initState();
+
+
+
+    
   }
 
-  Future<dynamic> getPlan(String lontinicio, String latiinicio, String lontfin,
-      String latifin) async {
+  getDirections() async {
+      List<LatLng> polylineCoordinates = [];
+     
+      PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+          googleAPiKey,
+          PointLatLng(startLocation.latitude, startLocation.longitude),
+          PointLatLng(endLocation.latitude, endLocation.longitude),
+          travelMode: TravelMode.driving,
+      );
+
+      if (result.points.isNotEmpty) {
+            result.points.forEach((PointLatLng point) {
+                polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+            });
+      } else {
+         print(result.errorMessage);
+      }
+      addPolyLine(polylineCoordinates);
+  }
+
+  addPolyLine(List<LatLng> polylineCoordinates) {
+    PolylineId id = const PolylineId("poly");
+    Polyline polyline = Polyline(
+      polylineId: id,
+      color: Colors.deepPurpleAccent,
+      points: polylineCoordinates,
+      width: 8,
+    );
+    Polylines[id] = polyline;
+    setState(() {});
+  }
+
+
+
+//Función que permite obtener la ruta óptima
+  Future<dynamic> getPlan(String lontinicio, String latiinicio, String lontfin,String latifin) async {
     dynamic url =
         "http://sigbus.diagrammer.cfd/api/fin/$lontinicio/$latiinicio/$lontfin/$latifin";
     var response = await http.get(Uri.parse(url));
@@ -79,7 +110,7 @@ class MapSampleState extends State<MapSample> {
       if (statusCode == 201 || statusCode == 200) {
         List results = json.decode(response.body);
         List<LatLng> latLngPolylines = [];
-
+//Iterable permite recorrer todos los datos de la API para graficar
         Iterable _polyline = Iterable.generate(results.length, (index) {
           Map result = results[index];
           String lati = result["Lati"];
@@ -97,35 +128,41 @@ class MapSampleState extends State<MapSample> {
           );
         });
         setState(() {
-          polylines = _polyline;
+          polylines = latLngPolylines;
         });
       }
     }
   }
 
-  Future<dynamic> getRecorrido(String lineaId, String lineaRe, int lineaCol) async {
+//Muestra el recorrido de una sola línea, ya sea ida o vuelta
+  Future<dynamic> getRecorrido(
+      String lineaId, String lineaRe, int lineaCol) async {
     dynamic url =
         "http://sistemageografico.tonker.net/mapsig/public/api/recorrido/$lineaId/$lineaRe";
     var response = await http.get(Uri.parse(url));
+//Nos permite obtener el color
+    dynamic colorUrl =
+        "http://sigbus.diagrammer.cfd/api/color/$lineaId/$lineaRe";
+ /*    var responseColor = await http.get(Uri.parse(colorUrl)); */
 
-    dynamic colorUrl = "http://sigbus.diagrammer.cfd/api/color/$lineaId/$lineaRe";
-    var responseColor = await http.get(Uri.parse(colorUrl)); 
-    
-    Color test = Color (lineaCol);
+
+
+    Color test = Color(lineaCol);
     if (response.statusCode == 200) {
       final int statusCode = response.statusCode;
       if (statusCode == 201 || statusCode == 200) {
         List results = json.decode(response.body);
         List<LatLng> latLngPolylines = [];
 
-        Iterable _polyline = Iterable.generate(results.length, (index) {
-          Map result = results[index];
+        for (var i = 0; i < results.length; i++) {
+          Map result = results[i];
           String lati = result["Lati"];
           String lont = result["Lont"];
           lont = lont.replaceAll('-63,', '-63.');
           lati = lati.replaceAll('-17,', '-17.');
 
-          if (result['PuntoD'] != 0) {
+          if (result['PuntoD'] == 0) {
+          } else {
             latLngPolylines.add(LatLng(double.parse(lati), double.parse(lont)));
 
             if (lineaRe == 'V') {
@@ -144,77 +181,12 @@ class MapSampleState extends State<MapSample> {
               );
             }
           }
-        });
+        }
+
         setState(() {
-          polylines = _polyline;
+          polylines = latLngPolylines;
         });
       }
-    }
-  }
-
-  getViaje() async {
-    final response = await http.get(
-      Uri.parse(
-          "http://sigbus.diagrammer.cfd/api/fin/-63.187677/-17.789472/-63.118738/-17.808482"),
-    );
-    final int statusCode = response.statusCode;
-    if (statusCode == 201 || statusCode == 200) {
-      List results = json.decode(response.body);
-      List<LatLng> latLngPolylines = [];
-      Iterable _polyline = Iterable.generate(results.length, (index) {
-        Map result = results[index];
-        String lati = result["Lati"];
-        String lont = result["Lont"];
-        lont = lont.replaceAll('-63,', '-63.');
-        lati = lati.replaceAll('-17,', '-17.');
-
-        latLngPolylines.add(LatLng(double.parse(lati), double.parse(lont)));
-
-        return Polyline(
-          polylineId: const PolylineId('1'),
-          points: latLngPolylines,
-          color: Colors.green,
-          width: 2,
-        );
-      });
-
-      setState(() {
-        polylines = _polyline;
-      });
-    }
-  }
-
-  getMarkers() async {
-    final response =
-        await http.get(Uri.parse("http://sigbus.diagrammer.cfd/api/lineas/5"));
-    final int statusCode = response.statusCode;
-
-    if (statusCode == 201 || statusCode == 200) {
-      List results = json.decode(response.body);
-
-      List<LatLng> latLngPolylines = [];
-
-      Iterable _polyline = Iterable.generate(results.length, (index) {
-        Map result = results[0][index];
-        print(result);
-        String lati = result["Lati"];
-        String lont = result["Lont"];
-        lont = lont.replaceAll('-63,', '-63.');
-        lati = lati.replaceAll('-17,', '-17.');
-
-        latLngPolylines.add(LatLng(double.parse(lati), double.parse(lont)));
-
-        return Polyline(
-          polylineId: const PolylineId('1'),
-          points: latLngPolylines,
-          color: Colors.green,
-          width: 2,
-        );
-      });
-
-      setState(() {
-        polylines = _polyline;
-      });
     }
   }
 
@@ -227,7 +199,6 @@ class MapSampleState extends State<MapSample> {
   List<Marker> markerAll = [];
   List markerLongLat = [];
 
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -237,12 +208,6 @@ class MapSampleState extends State<MapSample> {
             widget.recorrido.toString(),
             widget.lineaCol,
           ),
-          getPlan(
-            widget.lontinicio.toString(),
-            widget.latiinicio.toString(),
-            widget.lontfin.toString(),
-            widget.latifin.toString(),
-          )
         ]),
         builder: (context, items) {
           return Scaffold(
@@ -264,9 +229,7 @@ class MapSampleState extends State<MapSample> {
             body: GoogleMap(
               myLocationEnabled: true,
               compassEnabled: true,
-              polylines: Set.from(
-                polylines,
-              ),
+              polylines: Set<Polyline>.of(Polylines.values),
               mapType: MapType.normal,
               initialCameraPosition: _kGooglePlex,
               onTap: _handleTap,
@@ -334,9 +297,12 @@ class MapSampleState extends State<MapSample> {
     LatLng tappedPointAux2;
 
     var lontinicio;
+    var data = "L008V";
     var latiinicio;
+    var distancia = "4,2KM";
     var lontfin;
     var latifin;
+
     // ignore: unrelated_type_equality_checks
     Future<Uint8List> getBytesFromAsset(String path, int width) async {
       ByteData data = await rootBundle.load(path);
@@ -351,7 +317,7 @@ class MapSampleState extends State<MapSample> {
     final Uint8List markerIcon =
         await getBytesFromAsset('images/flag.png', 150);
 
-     if (markerAll.isEmpty) {
+    if (markerAll.isEmpty) {
       showDialog(
         context: context,
         builder: (_) => const AlertDialog(
@@ -360,10 +326,9 @@ class MapSampleState extends State<MapSample> {
               "El primer(1er) Tap indicará tu punto de salida, y el segundo Tap (2do) el de llegada. Permitenos ayudarte a tener un buen viaje."),
         ),
       );
-    } 
+    }
     setState(
       () {
-
         if (markerAll.isEmpty) {
           markerAll.add(
             Marker(
@@ -373,14 +338,11 @@ class MapSampleState extends State<MapSample> {
               position: tappedPoint,
             ),
           );
-            markerLongLat.add(tappedPoint.longitude.toString());
-            markerLongLat.add(tappedPoint.latitude.toString());
-
-
+          markerLongLat.add(tappedPoint.longitude.toString());
+          markerLongLat.add(tappedPoint.latitude.toString());
         } else {
           if (markerAll.length >= 2) {
             markerAll = [];
-
           } else {
             markerAll.add(Marker(
               markerId: MarkerId(
@@ -398,8 +360,17 @@ class MapSampleState extends State<MapSample> {
             lontfin = markerLongLat[2].toString();
             latifin = markerLongLat[3].toString();
 
-            getPlan(lontinicio, latiinicio, lontfin, latifin);
-
+            showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                      title: const Text("DESCRIPCIÓN: "),
+                      content: SingleChildScrollView(
+                        child: Card(
+                          child: Text("El micro que se debe tomar es: " + data),
+                          // ignore: prefer_const_literals_to_create_immutables
+                        ),
+                      ),
+                    ));
           }
         }
       },
