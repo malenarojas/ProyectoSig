@@ -160,7 +160,7 @@ class MapSampleState extends State<MapSample> {
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
-              recorrer('10', 'V');
+              recorrer('8', 'V');
             },
           ),
           IconButton(
