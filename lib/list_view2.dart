@@ -16,7 +16,7 @@ class List_view2Screen extends StatelessWidget {
       (http.Response response) {
         final int statusCode = response.statusCode;
         if (statusCode < 200 || statusCode > 400) {
-          throw Exception("Error while fetching data");
+          throw Exception("No se cargaron los datos");
         }
       },
     );

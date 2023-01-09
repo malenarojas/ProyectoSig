@@ -1,3 +1,4 @@
+// MENU LATERAL IZQUIERDO
 import 'package:flutter/material.dart';
 
 class DrawerScreen extends StatelessWidget {
@@ -24,13 +25,13 @@ class DrawerScreen extends StatelessWidget {
           _ListTile(
             titulo: 'Ver rutas',
             icono: Icons.message,
-          ),
+          ), 
           _ListTile(
-            titulo: 'Profile',
+            titulo: 'Perfil',
             icono: Icons.account_circle,
           ),
           _ListTile(
-            titulo: 'Settings',
+            titulo: 'Configuraciones',
             icono: Icons.settings,
           ),
         ],
