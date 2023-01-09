@@ -56,7 +56,7 @@ class HomeScreen extends StatelessWidget {
                         // );
                         Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
-                                builder: (context) =>  MapSample(1,'V',0xfff00b0b)),
+                                builder: (context) =>  MapSample(1,'V',0x00000000)),
                             (Route<dynamic> route) => false);
                       },
                       child: Container(
