@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_2/Drawer.dart';
 import 'package:flutter_application_2/list_view2.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:core';
 import 'package:http/http.dart' as http;
@@ -30,22 +29,15 @@ final Set<Polyline> _polyline = {};
 class MapSampleState extends State<MapSample> {
   final Completer<GoogleMapController> _controller = Completer();
   Iterable markers = [];
-  List<dynamic> polylines = [];
+  Iterable polylines = [];
   Iterable polylines2 = [];
 
-
-
-  PolylinePoints polylinePoints = PolylinePoints();
-  Map<PolylineId, Polyline> Polylines = {};
-  LatLng startLocation = const LatLng(-17.779524, -63.172542);  
-  LatLng endLocation = const LatLng(-17.778195, -63.165161); 
-  static const LatLng _center = LatLng(-17.778943, -63.168997);
-  List<LatLng> polylineCoordinates = [];
-  String googleAPiKey = "AIzaSyB4DX_UdO_V3a5rua6VdmFbuPXmyLHz6Oo";
-
-
-
-
+  static const CameraPosition _PosicionInicial = CameraPosition(
+    target: LatLng(-17.7817958, -63.1716228),
+    zoom: 14.4746,
+    bearing: 10.8334901395799,
+    tilt: 79.440717697143555,
+  );
 
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(-17.7817958, -63.1716228),
@@ -54,50 +46,82 @@ class MapSampleState extends State<MapSample> {
 
   @override
   void initState() {
-
-getDirections();
-
-
-    super.initState();
-
-
-
-    
-  }
-
-  getDirections() async {
-      List<LatLng> polylineCoordinates = [];
-     
-      PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-          googleAPiKey,
-          PointLatLng(startLocation.latitude, startLocation.longitude),
-          PointLatLng(endLocation.latitude, endLocation.longitude),
-          travelMode: TravelMode.driving,
-      );
-
-      if (result.points.isNotEmpty) {
-            result.points.forEach((PointLatLng point) {
-                polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-            });
-      } else {
-         print(result.errorMessage);
-      }
-      addPolyLine(polylineCoordinates);
-  }
-
-  addPolyLine(List<LatLng> polylineCoordinates) {
-    PolylineId id = const PolylineId("poly");
-    Polyline polyline = Polyline(
-      polylineId: id,
-      color: Colors.deepPurpleAccent,
-      points: polylineCoordinates,
-      width: 8,
+    recorrer(
+      widget.index.toString(),
+      widget.recorrido.toString(),
     );
-    Polylines[id] = polyline;
-    setState(() {});
+    super.initState();
   }
 
 
+getplan(String lontinicio, String latiinicio, String lontfin,String latifin)async{
+    dynamic url =
+        "http://sigbus.diagrammer.cfd/api/fin/$lontinicio/$latiinicio/$lontfin/$latifin";
+    var response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final int statusCode = response.statusCode;
+      if (statusCode == 201 || statusCode == 200) {
+        List results = json.decode(response.body);
+        List<LatLng> latLngPolylines = [];
+//Iterable permite recorrer todos los datos de la API para graficar
+        Iterable _polyline = Iterable.generate(results.length, (index) {
+          Map result = results[index];
+          String lati = result["Lati"];
+          String lont = result["Lont"];
+          lont = lont.replaceAll('-63,', '-63.');
+          lati = lati.replaceAll('-17,', '-17.');
+
+          latLngPolylines.add(LatLng(double.parse(lati), double.parse(lont)));
+
+          return Polyline(
+            polylineId: const PolylineId('2'),
+            points: latLngPolylines,
+            color: Colors.black,
+            width: 2,
+          );
+        });
+        setState(() {
+          polylines = _polyline;
+        });
+      }
+    }
+  }
+  recorrer(String lineaId, String lineaRe) async {
+    dynamic url =
+        "http://sistemageografico.tonker.net/mapsig/public/api/recorrido/$lineaId/$lineaRe";
+    var response = await http.get(Uri.parse(url));
+    List results = json.decode(response.body);
+    List<LatLng> latLngPolylines = [];
+
+    for (var i = 0; i < results.length; i++) {
+      Map result = results[i];
+      String lati = result["Lati"];
+      String lont = result["Lont"];
+      lont = lont.replaceAll('-63,', '-63.');
+      lati = lati.replaceAll('-17,', '-17.');
+      latLngPolylines.add(LatLng(double.parse(lati), double.parse(lont)));
+
+      if (lineaRe == 'V') {
+        _polyline.add(Polyline(
+          polylineId: const PolylineId('1'),
+          points: latLngPolylines,
+          color: Colors.green,
+          width: 2,
+        ));
+      } else {
+        _polyline.add(Polyline(
+          polylineId: const PolylineId('1'),
+          points: latLngPolylines,
+          color: Colors.black,
+          width: 2,
+        ));
+      }
+    }
+    setState(() {
+      polylines = _polyline;
+    });
+  }
 
 //Función que permite obtener la ruta óptima
   Future<dynamic> getPlan(String lontinicio, String latiinicio, String lontfin,String latifin) async {
@@ -128,43 +152,42 @@ getDirections();
           );
         });
         setState(() {
-          polylines = latLngPolylines;
+          polylines = _polyline;
         });
       }
     }
   }
 
-//Muestra el recorrido de una sola línea, ya sea ida o vuelta
   Future<dynamic> getRecorrido(
       String lineaId, String lineaRe, int lineaCol) async {
+    List<LatLng> latLngPolylines = [];
+    Color test = Color(lineaCol);
+
     dynamic url =
         "http://sistemageografico.tonker.net/mapsig/public/api/recorrido/$lineaId/$lineaRe";
+    if (dart == true) {
+      return null;
+    }
     var response = await http.get(Uri.parse(url));
-//Nos permite obtener el color
     dynamic colorUrl =
         "http://sigbus.diagrammer.cfd/api/color/$lineaId/$lineaRe";
- /*    var responseColor = await http.get(Uri.parse(colorUrl)); */
+    /*   var responseColor = await http.get(Uri.parse(colorUrl)); */
 
-
-
-    Color test = Color(lineaCol);
     if (response.statusCode == 200) {
       final int statusCode = response.statusCode;
       if (statusCode == 201 || statusCode == 200) {
         List results = json.decode(response.body);
-        List<LatLng> latLngPolylines = [];
 
-        for (var i = 0; i < results.length; i++) {
-          Map result = results[i];
+        Iterable _polyline = Iterable.generate(results.length - 1, (index) {
+          Map result = results[index];
           String lati = result["Lati"];
           String lont = result["Lont"];
           lont = lont.replaceAll('-63,', '-63.');
           lati = lati.replaceAll('-17,', '-17.');
-
-          if (result['PuntoD'] == 0) {
+          dart = true;
+          if (double.parse(result['Distancia'].replaceAll(',', '.')) == 0) {
           } else {
             latLngPolylines.add(LatLng(double.parse(lati), double.parse(lont)));
-
             if (lineaRe == 'V') {
               return Polyline(
                 polylineId: const PolylineId('1'),
@@ -181,10 +204,6 @@ getDirections();
               );
             }
           }
-        }
-
-        setState(() {
-          polylines = latLngPolylines;
         });
       }
     }
@@ -197,99 +216,80 @@ getDirections();
       zoom: 12.151926040649414);
 
   List<Marker> markerAll = [];
+  bool dart = false;
   List markerLongLat = [];
+
+  static const CameraPosition _posicionMapaInicial = CameraPosition(
+      bearing: 192.8334901395799,
+      target: LatLng(-17.7817958, -63.1716228),
+      tilt: 59.440717697143555,
+      zoom: 12.151926040649414);
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: Future.wait([
-          getRecorrido(
-            widget.index.toString(),
-            widget.recorrido.toString(),
-            widget.lineaCol,
-          ),
-        ]),
-        builder: (context, items) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Planificador de viajes'),
-              centerTitle: true,
-              backgroundColor: const Color.fromARGB(255, 99, 206, 241),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: () {},
-                ),
-                IconButton(
-                  icon: const Icon(Icons.notifications_active),
-                  onPressed: () {},
-                ),
-              ],
-            ),
-            body: GoogleMap(
-              myLocationEnabled: true,
-              compassEnabled: true,
-              polylines: Set<Polyline>.of(Polylines.values),
-              mapType: MapType.normal,
-              initialCameraPosition: _kGooglePlex,
-              onTap: _handleTap,
-              markers: Set.from(markerAll),
-              onMapCreated: (GoogleMapController controller) {
-                setState(() {});
-                _controller.complete(controller);
-              },
-            ),
-            drawer: DrawerScreen(),
-            //floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-            floatingActionButton: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                FloatingActionButton.extended(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => List_view2Screen()),
-                    );
-                  },
-                  label: const Text('Buscar linea'),
-                  icon: const Icon(Icons.directions_bus_filled_outlined),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                /* FloatingActionButton.extended(
-            label: const Text('+'),
-            icon: const Icon(Icons.account_box_outlined),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Planificador de viajes'),
+        centerTitle: true,
+        backgroundColor: const Color.fromARGB(255, 99, 206, 241),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
             onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (_) => const AlertDialog(
-                        title: Text("Hola"),
-                      ));
+              getplan(widget.lontinicio.toString(), widget.latiinicio.toString(), widget.lontfin.toString(), widget.latifin.toString());
             },
           ),
-          const SizedBox(
+          IconButton(
+            icon: const Icon(Icons.notifications_active),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: GoogleMap(
+        myLocationEnabled: true,
+        compassEnabled: true,
+        polylines: Set.from(
+          polylines,
+        ),
+        onTap: _handleTap,
+        markers: Set.from(markerAll),
+        mapType: MapType.normal,
+        initialCameraPosition: _PosicionInicial,
+        onMapCreated: (GoogleMapController controller) {
+          setState(() {});
+          _controller.complete(controller);
+        },
+      ),
+      drawer: const DrawerScreen(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: const [
+          btCentrar(),
+          SizedBox(
             height: 20,
           ),
-          FloatingActionButton.extended(
-            label: const Text('+'),
-            icon: const Icon(Icons.account_tree_sharp),
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (_) => const AlertDialog(
-                        title: Text("Adios"),
-                      ));
-            },
+          btPartida(),
+          SizedBox(
+            height: 20,
           ),
-          const SizedBox(
+          bt_Llegada(),
+          SizedBox(
+            height: 20,
+          ),
+          button_buscar(),
+          SizedBox(
             height: 100,
-          ),*/
-              ],
-            ),
-          );
-        });
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _centrarMapa() async {
+    final GoogleMapController controller = await _controller.future;
+    controller
+        .animateCamera(CameraUpdate.newCameraPosition(_posicionMapaInicial));
   }
 
   _handleTap(LatLng tappedPoint) async {
@@ -318,14 +318,7 @@ getDirections();
         await getBytesFromAsset('images/flag.png', 150);
 
     if (markerAll.isEmpty) {
-      showDialog(
-        context: context,
-        builder: (_) => const AlertDialog(
-          title: Text("Planifica tu viaje"),
-          content: Text(
-              "El primer(1er) Tap indicará tu punto de salida, y el segundo Tap (2do) el de llegada. Permitenos ayudarte a tener un buen viaje."),
-        ),
-      );
+
     }
     setState(
       () {
@@ -336,6 +329,7 @@ getDirections();
                 tappedPoint.toString(),
               ),
               position: tappedPoint,
+              draggable: true
             ),
           );
           markerLongLat.add(tappedPoint.longitude.toString());
@@ -377,11 +371,13 @@ getDirections();
     );
   }
 
-  Future<void> _goToTheLake() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
-  }
+  
 }
+
+
+
+
+
 
 class _ListTile extends StatelessWidget {
   final String titulo;
@@ -400,10 +396,103 @@ class _ListTile extends StatelessWidget {
     );
   }
 }
-/*
-  // Posicion inicial -17.7817958,-63.1716228
-  posicion.Latitude := -17.7817958;
-  posicion.Longitude := -63.1716228;
-  MapView1.Location := posicion;
-  MapView1.Zoom := 12;
-*/
+
+class bt_Llegada extends StatelessWidget {
+  const bt_Llegada({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.topRight,
+      child: FloatingActionButton.extended(
+        heroTag: 'btAdios',
+        label: const Text('+'),
+        icon: const Icon(Icons.sports_score),
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (_) => const AlertDialog(
+                    title: Text("Adios"),
+                  ));
+        },
+      ),
+    );
+  }
+}
+
+class btPartida extends StatelessWidget {
+  const btPartida({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.topRight,
+      child: FloatingActionButton.extended(
+        heroTag: 'btHola',
+        label: const Text('+'),
+        icon: const Icon(Icons.directions_walk),
+        onPressed: () {
+            
+
+
+
+          showDialog(
+              context: context,
+              builder: (_) => const AlertDialog(
+                    title: Text("Marcar"),
+                  ));
+        },
+      ),
+    );
+  }
+}
+
+class btCentrar extends StatelessWidget {
+  const btCentrar({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.topRight,
+      child: FloatingActionButton.extended(
+        heroTag: 'btCentar',
+        label: const Text(''),
+        icon: const Icon(Icons.center_focus_strong),
+        onPressed: () {
+          
+        },
+      ),
+    );
+  }
+}
+
+class button_buscar extends StatelessWidget {
+  const button_buscar({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.topRight,
+      child: FloatingActionButton.extended(
+        heroTag: 'btBuscar',
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => List_view2Screen()),
+          );
+        },
+        label: const Text('Buscar micros'),
+        icon: const Icon(Icons.directions_bus_filled_outlined),
+      ),
+    );
+  }
+}
+

@@ -48,7 +48,6 @@ class HomeScreen extends StatelessWidget {
                     const SizedBox(height: 25),
                     GestureDetector(
                       onTap: () {
-                        print('Button Clicled');
                         // Navigator.push(
                         //   context,
                         //   MaterialPageRoute(
@@ -57,8 +56,7 @@ class HomeScreen extends StatelessWidget {
                         // );
                         Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
-                                //builder: (context) => const ListView1Screen()),
-                                builder: (context) =>  MapSample(0,'V',0)),
+                                builder: (context) =>  MapSample(1,'V',0xfff00b0b)),
                             (Route<dynamic> route) => false);
                       },
                       child: Container(
