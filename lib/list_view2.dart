@@ -58,8 +58,8 @@ class List_view2Screen extends StatelessWidget {
                     //alignment: Alignment.center,
                     children: [
                       Ink.image(
-                        width: 450.0,
-                        height: 350.0,
+                        width: 300,
+                        height: 300,
                         image: const AssetImage('images/L001.png'),
                         alignment: Alignment.center,
                         //fit: BoxFit.fitWidth,
@@ -115,8 +115,8 @@ class List_view2Screen extends StatelessWidget {
                     alignment: Alignment.bottomLeft,
                     children: [
                       Ink.image(
-                        width: 450.0,
-                        height: 350.0,
+                        width: 300,
+                        height: 300,
                         image: const AssetImage(
                           'images/L002.png',
                         ),
@@ -174,8 +174,8 @@ class List_view2Screen extends StatelessWidget {
                     alignment: Alignment.bottomLeft,
                     children: [
                       Ink.image(
-                        width: 450.0,
-                        height: 350.0,
+                        width: 300,
+                        height: 300,
                         image: const AssetImage('images/L005.png'),
                         //fit: BoxFit.fitWidth,
                       )
@@ -230,8 +230,8 @@ class List_view2Screen extends StatelessWidget {
                     alignment: Alignment.bottomLeft,
                     children: [
                       Ink.image(
-                        width: 450.0,
-                        height: 350.0,
+                        width: 300,
+                        height: 300,
                         image: const AssetImage('images/L008.png'),
                         //fit: BoxFit.fitWidth,
                         alignment: Alignment.center,
@@ -287,8 +287,8 @@ class List_view2Screen extends StatelessWidget {
                     alignment: Alignment.bottomLeft,
                     children: [
                       Ink.image(
-                        width: 450.0,
-                        height: 350.0,
+                        width: 300,
+                        height: 300,
                         image: const AssetImage('images/L009.png'),
                         //fit: BoxFit.fitWidth,
                         alignment: Alignment.center,
@@ -344,8 +344,8 @@ class List_view2Screen extends StatelessWidget {
                     alignment: Alignment.bottomLeft,
                     children: [
                       Ink.image(
-                        width: 450.0,
-                        height: 350.0,
+                        width: 300,
+                        height: 300,
                         image: const AssetImage('images/L010.png'),
                         //fit: BoxFit.fitWidth,
                         alignment: Alignment.center,
@@ -401,8 +401,8 @@ class List_view2Screen extends StatelessWidget {
                     alignment: Alignment.bottomLeft,
                     children: [
                       Ink.image(
-                        width: 450.0,
-                        height: 350.0,
+                        width: 300,
+                        height: 300,
                         image: const AssetImage('images/L011.jpeg'),
                         //fit: BoxFit.fitWidth,
                         alignment: Alignment.center,
@@ -458,8 +458,8 @@ class List_view2Screen extends StatelessWidget {
                     alignment: Alignment.bottomLeft,
                     children: [
                       Ink.image(
-                        width: 450.0,
-                        height: 350.0,
+                        width: 300,
+                        height: 300,
                         image: const AssetImage('images/L016.png'),
                         //fit: BoxFit.fitWidth,
                         alignment: Alignment.center,
@@ -515,8 +515,8 @@ class List_view2Screen extends StatelessWidget {
                     alignment: Alignment.bottomLeft,
                     children: [
                       Ink.image(
-                        width: 450.0,
-                        height: 350.0,
+                        width: 300,
+                        height: 300,
                         image: const AssetImage('images/L017.png'),
                         //fit: BoxFit.fitWidth,
                         alignment: Alignment.center,
@@ -572,8 +572,8 @@ class List_view2Screen extends StatelessWidget {
                     alignment: Alignment.bottomLeft,
                     children: [
                       Ink.image(
-                        width: 450.0,
-                        height: 350.0,
+                        width: 300,
+                        height: 300,
                         image: const AssetImage('images/L018.png'),
                         //fit: BoxFit.fitWidth,
                         alignment: Alignment.center,
